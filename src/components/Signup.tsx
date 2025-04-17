@@ -1,4 +1,3 @@
-import React from 'react';
 import taskaLogo from '../assets/taska.svg';
 
 export default function Signup() {
