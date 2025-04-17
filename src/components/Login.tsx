@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import React from 'react';
+=======
+>>>>>>> updates-branch
 import taskaLogo from '../assets/taska.svg';
 
 export default function Login(){
