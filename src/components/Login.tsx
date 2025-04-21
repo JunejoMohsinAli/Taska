@@ -1,14 +1,43 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import taskaLogo from '../assets/taska.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginSchema, LoginData } from '../utils/auth';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: hook up your actual login logic here
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginData) => {
+    // Load users array from localStorage
+    const users: LoginData[] = JSON.parse(localStorage.getItem('users') || '[]');
+  
+    // Check if email & password match any user
+    const matched = users.find(
+      (u) => u.email === data.email && u.password === data.password
+    );
+  
+    if (matched) {
+      // If match found → login success
+      localStorage.setItem('currentUser', matched.email);
+      console.log('✅ Logged in as:', matched.email);
+  
+      // Redirect to home
+      navigate('/');
+    } else {
+      // No match → show error
+      alert('Invalid email or password');
+    }
   };
 
   return (
@@ -24,22 +53,27 @@ export default function Login() {
           Welcome back! 👋🏼
         </h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           {/* Email */}
           <input
             type="email"
             placeholder="Email"
-            required
-            className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            {...register('email')}
+            className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
+          {errors.email && (
+            <p className="text-red-500 text-sm mb-2">
+              {errors.email.message}
+            </p>
+          )}
 
           {/* Password */}
           <div className="relative mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
-              required
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              {...register('password')}
+              className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
             <button
               type="button"
@@ -53,6 +87,11 @@ export default function Login() {
               )}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-red-500 text-sm mb-4">
+              {errors.password.message}
+            </p>
+          )}
 
           {/* Submit */}
           <button
