@@ -34,7 +34,7 @@ export default function Signup() {
     // Store current logged-in user
     localStorage.setItem('currentUser', email);
   
-    console.log('✅ User signed up:', { fullName, role, email });
+    console.log('User signed up:', { fullName, role, email });
   
     // Redirect to login 
     navigate('/login');
@@ -44,7 +44,7 @@ export default function Signup() {
     <div className="min-h-screen bg-gray-100 font-[poppins] flex items-center justify-center">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
         <div className="flex items-center justify-center mb-4">
-          <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8 p-2 rounded-md" />
+          <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
           <h1 className="text-2xl font-semibold ml-2">Taska</h1>
         </div>
         <h2 className="text-lg font-medium text-gray-700 mb-6">Welcome to Taska! 👋🏼</h2>
@@ -67,7 +67,7 @@ export default function Signup() {
             defaultValue=""
             className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            <option value="" disabled selected>Select Role</option>
+            <option value="" disabled>Select Role</option>
             <option value="web">Web Developer</option>
             <option value="ios">iOS Developer</option>
             <option value="android">Android Developer</option>

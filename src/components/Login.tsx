@@ -30,7 +30,7 @@ export default function Login() {
     if (matched) {
       // If match found → login success
       localStorage.setItem('currentUser', matched.email);
-      console.log('✅ Logged in as:', matched.email);
+      console.log('Logged in as:', matched.email);
   
       // Redirect to home
       navigate('/');
