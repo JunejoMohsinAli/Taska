@@ -47,7 +47,7 @@ export default function Signup() {
           <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
           <h1 className="text-2xl font-semibold ml-2">Taska</h1>
         </div>
-        <h2 className="text-lg font-medium text-gray-700 mb-6">Welcome to Taska! 👋🏼</h2>
+        <h2 className="text-lg font-medium text-gray-700 mb-1">Welcome to Taska! <span className="text-xl">👋🏻</span></h2>
         
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
@@ -65,9 +65,9 @@ export default function Signup() {
           <select
             {...register('role')}
             defaultValue=""
-            className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="text-black appearance-none w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            <option value="" disabled>Select Role</option>
+            <option value="" disabled className="text-black">Select Role</option>
             <option value="web">Web Developer</option>
             <option value="ios">iOS Developer</option>
             <option value="android">Android Developer</option>

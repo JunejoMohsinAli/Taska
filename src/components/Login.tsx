@@ -49,8 +49,8 @@ export default function Login() {
           <h1 className="text-2xl font-semibold ml-2">Taska</h1>
         </div>
 
-        <h2 className="text-lg font-medium text-gray-700 mb-6">
-          Welcome back! 👋🏼
+        <h2 className="text-lg font-medium text-gray-700 mb-1">
+          Welcome back! <span className="text-xl">👋🏻</span>
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
