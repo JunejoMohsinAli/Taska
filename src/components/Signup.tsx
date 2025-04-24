@@ -41,7 +41,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 bg-[url('/background.png')] font-[poppins] flex items-center justify-center bg-no-repeat bg-bottom">
+    <div className="min-h-screen bg-gray-100 bg-[url('/background.png')] font-[poppins] flex items-center justify-center bg-no-repeat bg-[length:150%] bg-[position:bottom] sm:bg-[length:100%] sm:bg-[position:center_bottom]" >
+
       <div className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-sm mx-4">
         <div className="flex items-center justify-center mb-4">
           <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
