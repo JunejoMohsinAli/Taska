@@ -68,7 +68,7 @@ export default function Signup() {
             defaultValue=""
             className="text-black appearance-none w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            <option value="" disabled className="text-black">Select Role</option>
+            <option value="" disabled className="text-black">Select role</option>
             <option value="web">Web Developer</option>
             <option value="ios">iOS Developer</option>
             <option value="android">Android Developer</option>
