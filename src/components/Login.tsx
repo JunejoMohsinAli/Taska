@@ -41,8 +41,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-[poppins] flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
+    <div className="min-h-screen bg-gray-100 bg-[url('/background.png')] font-[poppins] flex items-center justify-center bg-no-repeat bg-bottom">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-sm mx-4">
         {/* Logo */}
         <div className="flex items-center justify-center mb-4">
           <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
@@ -57,7 +57,7 @@ export default function Login() {
           {/* Email */}
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Enter your email"
             {...register('email')}
             className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
@@ -71,7 +71,7 @@ export default function Login() {
           <div className="relative mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Password"
+              placeholder="Enter your password"
               {...register('password')}
               className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
@@ -103,11 +103,11 @@ export default function Login() {
         </form>
 
         {/* Switch to Signup */}
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-[rgba(76,78,100,0.6)]">
           Don’t have an account?{' '}
           <Link
             to="/signup"
-            className="text-indigo-500 font-medium hover:underline"
+            className="text-indigo-500 visited:text-indigo-800 font-medium hover:underline"
           >
             Sign Up
           </Link>

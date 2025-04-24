@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ChevronDown } from 'lucide-react';
 import taskaLogo from '../assets/taska.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import { signupSchema, SignupData } from '../utils/auth';
@@ -41,8 +41,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-[poppins] flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
+    <div className="min-h-screen bg-gray-100 bg-[url('/background.png')] font-[poppins] flex items-center justify-center bg-no-repeat bg-bottom">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-sm mx-4">
         <div className="flex items-center justify-center mb-4">
           <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
           <h1 className="text-2xl font-semibold ml-2">Taska</h1>
@@ -52,7 +52,7 @@ export default function Signup() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="Enter your name"
             {...register('fullName')} 
             className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
@@ -62,6 +62,7 @@ export default function Signup() {
             </p>
           )}
 
+          <div className='relative'>
           <select
             {...register('role')}
             defaultValue=""
@@ -73,15 +74,20 @@ export default function Signup() {
             <option value="android">Android Developer</option>
             <option value="SQA">SQA</option>
           </select>
+          <div className="absolute top-0 bottom-3 right-0 flex items-center px-3 pointer-events-none">
+                <ChevronDown className="h-5 w-5 text-gray-500" />
+          </div>
+              </div>
+          
           {errors.role && (
             <p className="text-red-500 text-sm mb-2">
               {errors.role.message}
             </p>
           )}
-
+  
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Enter you email"
             {...register('email')}
             className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
@@ -94,7 +100,7 @@ export default function Signup() {
           <div className="relative mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Password"
+              placeholder="Enter you password"
               {...register('password')}
               className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
@@ -123,11 +129,11 @@ export default function Signup() {
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-[rgba(76,78,100,0.6)]">
           Already have an account?{' '}
           <Link
             to="/login"
-            className="text-indigo-500 font-medium hover:underline">
+            className="text-indigo-500 visited:text-indigo-800 font-medium hover:underline">
             Log in
           </Link>
         </p>
