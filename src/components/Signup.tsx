@@ -129,7 +129,7 @@ export default function Signup() {
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-[rgba(76,78,100,0.6)]">
+        <p className="mt-4 text-sm text-gray-800">
           Already have an account?{' '}
           <Link
             to="/login"

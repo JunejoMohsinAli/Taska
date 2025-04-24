@@ -103,7 +103,7 @@ export default function Login() {
         </form>
 
         {/* Switch to Signup */}
-        <p className="mt-4 text-sm text-[rgba(76,78,100,0.6)]">
+        <p className="mt-4 text-sm text-gray-800">
           Don’t have an account?{' '}
           <Link
             to="/signup"
