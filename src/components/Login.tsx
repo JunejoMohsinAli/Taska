@@ -5,6 +5,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import taskaLogo from '../assets/taska.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema, LoginData } from '../utils/auth';
+import { supabase } from '../utils/supabaseClient';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,25 +19,19 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginData) => {
-    // Load users array from localStorage
-    const users: LoginData[] = JSON.parse(localStorage.getItem('users') || '[]');
+  const onSubmit = async (data: LoginData) => {
+    const { email, password } = data;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
   
-    // Check if email & password match any user
-    const matched = users.find(
-      (u) => u.email === data.email && u.password === data.password
-    );
-  
-    if (matched) {
-      // If match found → login success
-      localStorage.setItem('currentUser', matched.email);
-      console.log('Logged in as:', matched.email);
-  
-      // Redirect to home
-      navigate('/');
+    if (error) {
+      alert(`Login failed: ${error.message}`);
     } else {
-      // No match → show error
-      alert('Invalid email or password');
+      console.log('Logged in as:', email);
+      navigate('/');
     }
   };
 

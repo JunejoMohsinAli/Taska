@@ -5,6 +5,8 @@ import { Eye, EyeOff, ChevronDown } from 'lucide-react';
 import taskaLogo from '../assets/taska.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import { signupSchema, SignupData } from '../utils/auth';
+import { supabase } from '../utils/supabaseClient';
+
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,26 +20,26 @@ export default function Signup() {
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = (data: SignupData) => {
-    // Get current users to empty array
-    const users: SignupData[] = JSON.parse(localStorage.getItem('users') || '[]');
+  const onSubmit = async (data: SignupData) => {
+    const { email, password, fullName, role } = data;
   
-    // Extract fields
-    const { fullName, role, email, password } = data;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          fullName,
+          role,
+        },
+      },
+    });
   
-    // Push new user to array
-    users.push({ fullName, role, email, password, });
-  
-    // Save updated users array to localStorage
-    localStorage.setItem('users', JSON.stringify(users));
-  
-    // Store current logged-in user
-    localStorage.setItem('currentUser', email);
-  
-    console.log('User signed up:', { fullName, role, email });
-  
-    // Redirect to login 
-    navigate('/login');
+    if (error) {
+      alert(`Signup failed: ${error.message}`);
+    } else {
+      alert('Signup successful! Please check your email to verify.');
+      navigate('/login');
+    }
   };
 
   return (
@@ -69,7 +71,7 @@ export default function Signup() {
             defaultValue=""
             className="text-black appearance-none w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            <option value="" disabled className="text-black">Select role</option>
+            <option value="" disabled className="text-black">Select your role</option>
             <option value="web">Web Developer</option>
             <option value="ios">iOS Developer</option>
             <option value="android">Android Developer</option>
@@ -88,7 +90,7 @@ export default function Signup() {
   
           <input
             type="email"
-            placeholder="Enter you email"
+            placeholder="Enter your email"
             {...register('email')}
             className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
@@ -101,7 +103,7 @@ export default function Signup() {
           <div className="relative mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Enter you password"
+              placeholder="Enter your password"
               {...register('password')}
               className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
