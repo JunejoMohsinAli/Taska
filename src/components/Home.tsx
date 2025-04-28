@@ -33,7 +33,7 @@ export default function Home({
   onUpdate,
   onDelete,
 }: HomeProps) {
-  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [, setUserEmail] = useState<string | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const navigate = useNavigate()
 

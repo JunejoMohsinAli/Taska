@@ -1,4 +1,3 @@
-// src/components/PrivateRoute.tsx
 import { ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';

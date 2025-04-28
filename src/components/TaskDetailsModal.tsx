@@ -1,5 +1,3 @@
-// src/components/TaskDetailsModal.tsx
-import React from 'react'
 import { Task } from './Home'
 import { X, Trash2 } from 'lucide-react'
 
@@ -10,7 +8,6 @@ interface Props {
 }
 
 export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
-  // Read-only details modal
   const handleDelete = () => {
     onDelete(task.id)
     onClose()
@@ -30,7 +27,6 @@ export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
         {/* Body */}
         <div className="p-6 space-y-4 text-gray-800">
           <div>
-            {/* <h3 className="text-sm font-medium text-gray-600">Title</h3> */}
             <h1 className="text-2xl font-medium text-blue-600">{task.name}</h1>
           </div>
 
