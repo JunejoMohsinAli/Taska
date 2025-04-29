@@ -56,18 +56,25 @@ export default function Home({
     navigate('/create')
   }
 
+      const [isCollapsed, setIsCollapsed] = useState(false)
+      const toggleSidebar = () => setIsCollapsed(prev => !prev)
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r p-6 flex flex-col">
-        <div className="flex items-center mb-10">
+      <aside className={`bg-white border-r p-6 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-25' : 'w-64'}`}>
+        <div className={`flex items-center mb-10 ${isCollapsed ? 'justify-center' : ''}`}
+        >
           <img src={taskaLogo} alt="Taska" className="h-8 w-8" />
-          <span className="ml-2 font-bold text-xl">Taska</span>
+          {!isCollapsed && <span className="ml-2 font-bold text-xl">Taska</span>}
         </div>
         <nav>
-          <button className="flex items-center w-full p-2 rounded-lg bg-indigo-50 text-indigo-600 mb-2">
+        <button className={`flex items-center w-full p-2 rounded-lg mb-2 transition-colors ${
+              isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'
+            }`}
+          >
             <List className="h-5 w-5" />
-            <span className="ml-2">Task</span>
+            {!isCollapsed && <span className="ml-2">Task</span>}
           </button>
         </nav>
       </aside>
@@ -76,7 +83,9 @@ export default function Home({
       <main className="flex-1 p-8 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="flex items-center text-2xl font-semibold">
-            <Menu className="h-5 w-5 mr-2" />
+            <button onClick={toggleSidebar} className="flex items-center mr-4 focus:outline-none">
+              <Menu className="h-5 w-5 mr-2" />
+            </button>
             Task
             </h1>
           <div className="flex items-center space-x-4">

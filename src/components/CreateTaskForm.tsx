@@ -4,6 +4,7 @@ import { Task } from './Home'
 import { BookOpen, Menu, ChevronDown } from 'lucide-react'
 import taskaLogo from '../assets/taska.svg'
 import { supabase } from '../utils/supabaseClient'
+import { useState } from 'react'
 
 
 type Props = {
@@ -34,6 +35,9 @@ export default function CreateTaskForm({ onSubmit }: Props) {
     }
   })
 
+    const [isCollapsed, setIsCollapsed] = useState(false)
+    const toggleSidebar = () => setIsCollapsed(prev => !prev)
+
   const submit = (data: FormValues) => {
     const newTask: Task = {
       id: Date.now(),
@@ -51,15 +55,19 @@ export default function CreateTaskForm({ onSubmit }: Props) {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r p-6 flex flex-col">
-        <div className="flex items-center mb-10">
+      <aside className={`bg-white border-r p-6 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-25' : 'w-64'}`}>
+        <div className={`flex items-center mb-10 ${isCollapsed ? 'justify-center' : ''}`}
+        >
           <img src={taskaLogo} alt="Taska" className="h-8 w-8" />
-          <span className="ml-2 font-bold text-xl">Taska</span>
+          {!isCollapsed && <span className="ml-2 font-bold text-xl">Taska</span>}
         </div>
         <nav>
-        <button className="flex items-center w-full p-2 rounded-lg bg-indigo-50 text-indigo-600 mb-2">
+        <button className={`flex items-center w-full p-2 rounded-lg mb-2 transition-colors ${
+              isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'
+            }`}
+          >
         <BookOpen className="h-5 w-5" />
-            <span className="ml-2">Task</span>
+        {!isCollapsed && <span className="ml-2">Task</span>}
           </button>
         </nav>
       </aside>
@@ -68,7 +76,9 @@ export default function CreateTaskForm({ onSubmit }: Props) {
       <main className="flex-1 p-8 overflow-auto w-full">
         <div className="flex justify-between items-center mb-6">
         <h1 className="flex items-center text-2xl font-semibold">
+        <button onClick={toggleSidebar} className="flex items-center mr-4 focus:outline-none">
           <Menu className="h-5 w-5 mr-2" />
+          </button>
           Create New Task
         </h1>
           <button
@@ -92,6 +102,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
               <input
                 type="text"
                 placeholder="Enter title"
+                required
                 {...register('name')}
                 className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
@@ -105,6 +116,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
               <input
                 type="date"
                 {...register('due')}
+                required
                 className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
             </div>
