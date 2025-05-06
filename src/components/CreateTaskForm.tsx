@@ -1,11 +1,20 @@
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { Task } from './Home'
-import { BookOpen, Menu, ChevronDown } from 'lucide-react'
+import { BookOpen, Menu, ChevronDown, Flag } from 'lucide-react'
 import taskaLogo from '../assets/taska.svg'
 import { supabase } from '../utils/supabaseClient'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
+type Task = {
+  id: number
+  name: string
+  due: string
+  assignee: string
+  assigned: string
+  priority: 'Low' | 'Normal' | 'High'
+  status: 'Pending' | 'Active' | 'Closed'
+  description: string
+}
 
 type Props = {
   onSubmit(task: Task): void
@@ -23,26 +32,52 @@ type FormValues = {
 
 export default function CreateTaskForm({ onSubmit }: Props) {
   const navigate = useNavigate()
-  const { register, handleSubmit } = useForm<FormValues>({
+  const { register, handleSubmit, watch, setValue } = useForm<FormValues>({
     defaultValues: {
       name: '',
       due: '',
       assignee: '',
-      assigned:'',
+      assigned: '',
       priority: 'Low',
       status: 'Pending',
       description: '',
     }
   })
 
-    const [isCollapsed, setIsCollapsed] = useState(false)
-    const toggleSidebar = () => setIsCollapsed(prev => !prev)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isStatusOpen, setIsStatusOpen] = useState(false)
+  const [isPriorityOpen, setIsPriorityOpen] = useState(false)
+
+  const statusDropdownRef = useRef<HTMLDivElement>(null)
+  const priorityDropdownRef = useRef<HTMLDivElement>(null)
+
+  // toggle handlers
+  const toggleSidebar = () => setIsCollapsed(prev => !prev)
+  const toggleStatusDropdown = () => setIsStatusOpen(prev => !prev)
+  const togglePriorityDropdown = () => setIsPriorityOpen(prev => !prev)
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsStatusOpen(false)
+      }
+      if (
+        priorityDropdownRef.current &&
+        !priorityDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsPriorityOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const submit = (data: FormValues) => {
-    const newTask: Task = {
-      id: Date.now(),
-      ...data
-    }
+    const newTask: Task = { id: Date.now(), ...data }
     onSubmit(newTask)
     navigate('/')
   }
@@ -56,18 +91,14 @@ export default function CreateTaskForm({ onSubmit }: Props) {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <aside className={`bg-white border-r p-6 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-25' : 'w-64'}`}>
-        <div className={`flex items-center mb-10 ${isCollapsed ? 'justify-center' : ''}`}
-        >
+        <div className={`flex items-center mb-10 ${isCollapsed ? 'justify-center' : ''}`}>
           <img src={taskaLogo} alt="Taska" className="h-8 w-8" />
           {!isCollapsed && <span className="ml-2 font-bold text-xl">Taska</span>}
         </div>
         <nav>
-        <button className={`flex items-center w-full p-2 rounded-lg mb-2 transition-colors ${
-              isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'
-            }`}
-          >
-        <BookOpen className="h-5 w-5" />
-        {!isCollapsed && <span className="ml-2">Task</span>}
+          <button className={`flex items-center w-full p-2 rounded-lg mb-2 transition-colors ${isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'}`}>
+            <BookOpen className="h-5 w-5" />
+            {!isCollapsed && <span className="ml-2">Task</span>}
           </button>
         </nav>
       </aside>
@@ -75,12 +106,12 @@ export default function CreateTaskForm({ onSubmit }: Props) {
       {/* Main */}
       <main className="flex-1 p-8 overflow-auto w-full">
         <div className="flex justify-between items-center mb-6">
-        <h1 className="flex items-center text-2xl font-semibold">
-        <button onClick={toggleSidebar} className="flex items-center mr-4 focus:outline-none">
-          <Menu className="h-5 w-5 mr-2" />
-          </button>
-          Create New Task
-        </h1>
+          <h1 className="flex items-center text-2xl font-semibold">
+            <button onClick={toggleSidebar} className="flex items-center mr-4 focus:outline-none">
+              <Menu className="h-5 w-5 mr-2" />
+            </button>
+            Create New Task
+          </h1>
           <button
             onClick={handleLogout}
             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
@@ -89,136 +120,143 @@ export default function CreateTaskForm({ onSubmit }: Props) {
           </button>
         </div>
 
-        <form
-          onSubmit={handleSubmit(submit)}
-          className="bg-white shadow-md rounded-lg p-6"
-        >
+        <form onSubmit={handleSubmit(submit)} className="bg-white shadow-md rounded-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             {/* Title */}
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Title
-              </label>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Title</label>
               <input
                 type="text"
                 placeholder="Enter title"
                 required
                 {...register('name')}
-                className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
             </div>
 
             {/* Due Date */}
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Due Date
-              </label>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Due Date</label>
               <input
                 type="date"
                 {...register('due')}
                 required
-                className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="shadow border rounded w-full py-2 px-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
             </div>
 
             {/* Priority */}
-            <div className='relative'>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Priority
-              </label>
-              <select
-                {...register('priority')}
-                defaultValue=""
-                className="appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            <div className="relative" ref={priorityDropdownRef}>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Priority</label>
+              <button
+                type="button"
+                onClick={togglePriorityDropdown}
+                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 flex items-center justify-between"
               >
-                <option value="" disabled>
-                  Select
-                </option>
-                <option>Low</option>
-                <option>Normal</option>
-                <option>High</option>
-              </select>
-              <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-black" />
+                <span>{watch('priority') || 'Select'}</span>
+                <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
+                <ChevronDown className="h-5 w-5 text-black" />
               </div>
+              </button>
+              {isPriorityOpen && (
+                <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
+                  <ul className="py-1">
+                    {(['Low', 'Normal', 'High'] as const).map((lvl, i) => (
+                      <li key={lvl} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
+                        setValue('priority', lvl)
+                        togglePriorityDropdown()
+                      }}>
+                        <Flag
+                          className="h-4 w-4 mr-2 fill-current"
+                          style={{ color: lvl === 'Low' ? '#FBBF24' : lvl === 'Normal' ? '#10B981' : '#EF4444' }}
+                        />
+                        {lvl}
+                        {i < 2 && <hr className="border-gray-200 mx-4 mt-2" />}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Status */}
-            <div className='relative'>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Status
-              </label>
-              <select
-                {...register('status')}
-                defaultValue=""
-                className="appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            <div className="relative" ref={statusDropdownRef}>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Status</label>
+              <button
+                type="button"
+                onClick={toggleStatusDropdown}
+                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 flex items-center justify-between"
               >
-                <option value="" disabled>
-                  Select
-                </option>
-                <option>Pending</option>
-                <option>Active</option>
-                <option>Closed</option>
-              </select>
-              <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-black" />
+                <span>{watch('status') || 'Select'}</span>
+                <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
+                <ChevronDown className="h-5 w-5 text-black" />
               </div>
+              </button>
+              {isStatusOpen && (
+                <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
+                  <ul className="py-1">
+                    {(['Pending', 'Active', 'Closed'] as const).map((st, i) => (
+                      <li key={st} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
+                        setValue('status', st)
+                        toggleStatusDropdown()
+                      }}>
+                        <span
+                          className="w-4 h-4 rounded-full mr-2"
+                          style={{ backgroundColor: st === 'Pending' ? '#FBBF24' : st === 'Active' ? '#10B981' : '#EF4444' }}
+                        />
+                        {st}
+                        {i < 2 && <hr className="border-gray-200 mx-4 mt-2" />}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Assignee */}
-            <div className='relative'>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Assignee
-              </label>
+            <div className="relative">
+              <label className="block text-gray-700 text-sm font-medium mb-1">Assignee</label>
               <select
                 {...register('assignee')}
                 defaultValue=""
-                className="appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="text-sm appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               >
-                <option value="" disabled>
-                  Select
-                </option>
+                <option value="" disabled>Select</option>
                 <option>Syed Muqarab</option>
                 <option>Saud Haris</option>
                 <option>Saeed</option>
               </select>
               <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-black" />
+                <ChevronDown className="h-5 w-5 text-black" />
               </div>
             </div>
 
-            {/* Assigned */}
-              <div className='relative'>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Assigned by
-              </label>
+            {/* Assigned by */}
+            <div className="relative">
+              <label className="block text-gray-700 text-sm font-medium mb-1">Assigned by</label>
               <select
                 {...register('assigned')}
                 defaultValue=""
-                className="appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="text-sm appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               >
-                <option value="" disabled>
-                  Select
-                </option>
+                <option value="" disabled>Select</option>
                 <option>Majid</option>
                 <option>Kaif</option>
                 <option>Ahmer</option>
               </select>
               <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-black" />
+                <ChevronDown className="h-5 w-5 text-black" />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                Description
-              </label>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Description</label>
               <input
                 type="text"
                 placeholder="Enter description"
                 {...register('description')}
-                className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
             </div>
           </div>

@@ -15,9 +15,9 @@ export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/25 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-5xl relative">
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 mx-6 "> 
           <h2 className="text-xl font-semibold">Task Details</h2>
           <button onClick={onClose} aria-label="Close modal">
             <X className="h-5 w-5 text-gray-600 hover:text-gray-800" />
@@ -30,7 +30,7 @@ export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
             <h1 className="text-2xl font-medium text-blue-600">{task.name}</h1>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-5 gap-4">
             <div>
               <h3 className="text-sm font-medium text-gray-600">Due Date</h3>
               <p className="mt-1">{task.due}</p>
@@ -39,9 +39,6 @@ export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
               <h3 className="text-sm font-medium text-gray-600">Assignee</h3>
               <p className="mt-1">{task.assignee}</p>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="text-sm font-medium text-gray-600">Priority</h3>
               <p className="mt-1">{task.priority}</p>
@@ -55,15 +52,22 @@ export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
               <p className="mt-1">{task.assigned}</p>
             </div>
           </div>
-
           <div>
             <h3 className="text-sm font-medium text-gray-600">Description</h3>
-            <p className="mt-1 whitespace-pre-wrap">{task.description || '—'}</p>
-          </div>
-        </div>
+            <p className="
+              mt-1
+              border
+              border-gray-300
+              rounded-lg
+              p-3       
+              whitespace-pre-wrap
+              break-words       
+            ">{task.description || '—'}</p>
+                    </div>
+                  </div>
 
         {/* Footer */}
-        <div className="flex justify-end items-center space-x-3 p-4 border-t">
+        <div className="flex justify-end items-center space-x-3 p-4">
           <button
             onClick={handleDelete}
             className="flex items-center px-4 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"

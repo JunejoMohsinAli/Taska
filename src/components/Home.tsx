@@ -95,15 +95,16 @@ export default function Home({
             >
               Log Out
             </button>
-            <button
+          </div>
+        </div>
+        <div className='pb-3 flex items-center space-x-4'>
+        <button
               onClick={handleCreateNew}
               className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition"
             >
               Create New
             </button>
-          </div>
-        </div>
-
+            </div>
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full">
             <thead className="bg-gray-100">
