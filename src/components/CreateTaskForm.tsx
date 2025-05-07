@@ -160,9 +160,10 @@ export default function CreateTaskForm({ onSubmit }: Props) {
               </button>
               {isPriorityOpen && (
                 <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
+                  <div className="border-b border-gray-300 px-4 mx-4 font-medium text-gray-700">Priority</div>
                   <ul className="py-1">
                     {(['Low', 'Normal', 'High'] as const).map((lvl, i) => (
-                      <li key={lvl} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
+                      <li key={lvl} className="border-b border-gray-300 mx-4 flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
                         setValue('priority', lvl)
                         togglePriorityDropdown()
                       }}>
@@ -194,9 +195,10 @@ export default function CreateTaskForm({ onSubmit }: Props) {
               </button>
               {isStatusOpen && (
                 <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
+                  <div className="border-b border-gray-300 px-4 mx-4 font-medium text-gray-700">Status</div>
                   <ul className="py-1">
                     {(['Pending', 'Active', 'Closed'] as const).map((st, i) => (
-                      <li key={st} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
+                      <li key={st} className="border-b border-gray-300 mx-4 flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
                         setValue('status', st)
                         toggleStatusDropdown()
                       }}>
