@@ -124,7 +124,7 @@ export default function Home({
             </nav>
           </div>
           <div
-            className="flex-1 bg-black bg-opacity-30"
+            className="flex-1 bg-black opacity-40"
             onClick={() => setIsSidebarOpen(false)}
           />
         </aside>
