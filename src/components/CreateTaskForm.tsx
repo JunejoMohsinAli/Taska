@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { BookOpen, Menu, ChevronDown, Flag } from 'lucide-react'
+import { BookOpen, Menu, X, ChevronDown, Flag } from 'lucide-react'
 import taskaLogo from '../assets/taska.svg'
 import { supabase } from '../utils/supabaseClient'
 import { useState, useRef, useEffect } from 'react'
@@ -44,6 +44,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
     }
   })
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isStatusOpen, setIsStatusOpen] = useState(false)
   const [isPriorityOpen, setIsPriorityOpen] = useState(false)
@@ -51,24 +52,20 @@ export default function CreateTaskForm({ onSubmit }: Props) {
   const statusDropdownRef = useRef<HTMLDivElement>(null)
   const priorityDropdownRef = useRef<HTMLDivElement>(null)
 
-  // toggle handlers
-  const toggleSidebar = () => setIsCollapsed(prev => !prev)
-  const toggleStatusDropdown = () => setIsStatusOpen(prev => !prev)
-  const togglePriorityDropdown = () => setIsPriorityOpen(prev => !prev)
+  // Auth guard
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
+      if (error || !user) navigate('/login')
+    })
+  }, [navigate])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        statusDropdownRef.current &&
-        !statusDropdownRef.current.contains(event.target as Node)
-      ) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
         setIsStatusOpen(false)
       }
-      if (
-        priorityDropdownRef.current &&
-        !priorityDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (priorityDropdownRef.current && !priorityDropdownRef.current.contains(e.target as Node)) {
         setIsPriorityOpen(false)
       }
     }
@@ -88,191 +85,249 @@ export default function CreateTaskForm({ onSubmit }: Props) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className={`bg-white border-r p-6 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-25' : 'w-64'}`}>
-        <div className={`flex items-center mb-10 ${isCollapsed ? 'justify-center' : ''}`}>
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Desktop Sidebar */}
+      <aside
+        className={`
+          hidden md:flex flex-col bg-white border-r p-6
+          transition-all duration-300
+          ${isCollapsed ? 'w-20' : 'w-64'}
+        `}
+      >
+        <div className={`flex items-center mb-10 ${isCollapsed && 'justify-center'}`}>
           <img src={taskaLogo} alt="Taska" className="h-8 w-8" />
           {!isCollapsed && <span className="ml-2 font-bold text-xl">Taska</span>}
         </div>
-        <nav>
-          <button className={`flex items-center w-full p-2 rounded-lg mb-2 transition-colors ${isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'}`}>
+        <nav className="flex-1">
+          <button
+            className={`
+              flex items-center w-full p-2 rounded-lg mb-2 transition-colors
+              ${isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'}
+            `}
+          >
             <BookOpen className="h-5 w-5" />
-            {!isCollapsed && <span className="ml-2">Task</span>}
+            {!isCollapsed && <span className="ml-2">Tasks</span>}
           </button>
         </nav>
+        <button
+          onClick={() => setIsCollapsed(v => !v)}
+          className="mt-auto text-gray-500 hover:text-gray-700 transition"
+        >
+          {isCollapsed ? '→' : '←'}
+        </button>
       </aside>
 
+      {/* Mobile Drawer */}
+      {isSidebarOpen && (
+        <aside className="fixed inset-0 z-50 flex md:hidden">
+          <div className="w-64 bg-white p-6 border-r shadow-xl">
+            <div className="flex justify-between items-center mb-10">
+              <img src={taskaLogo} alt="Taska" className="h-8 w-8" />
+              <button onClick={() => setIsSidebarOpen(false)}>
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <nav>
+              <button
+                className="flex items-center w-full p-2 rounded-lg mb-2 bg-indigo-50 text-indigo-600"
+              >
+                <BookOpen className="h-5 w-5" />
+                <span className="ml-2">Tasks</span>
+              </button>
+            </nav>
+          </div>
+          <div
+            className="flex-1 bg-black opacity-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        </aside>
+      )}
+
       {/* Main */}
-      <main className="flex-1 p-8 overflow-auto w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="flex items-center text-2xl font-semibold">
-            <button onClick={toggleSidebar} className="flex items-center mr-4 focus:outline-none">
-              <Menu className="h-5 w-5 mr-2" />
+      <main className="flex-1 flex flex-col overflow-auto">
+        {/* Header */}
+        <header className="flex items-center justify-between p-4 md:p-8 bg-white border-b">
+          <div className="flex items-center">
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="md:hidden mr-4 focus:outline-none"
+            >
+              <Menu className="h-6 w-6" />
             </button>
-            Create New Task
-          </h1>
+            <h1 className="text-2xl font-semibold">Create New Task</h1>
+          </div>
           <button
             onClick={handleLogout}
             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
           >
             Log Out
           </button>
+        </header>
+
+        {/* Form */}
+        <div className="p-4 md:p-8">
+          <form onSubmit={handleSubmit(submit)} className="bg-white shadow-md rounded-lg p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              {/* Title */}
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">Title</label>
+                <input
+                  type="text"
+                  placeholder="Enter title"
+                  required
+                  {...register('name')}
+                  className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+              </div>
+
+              {/* Due Date */}
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">Due Date</label>
+                <input
+                  type="date"
+                  required
+                  {...register('due')}
+                  className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+              </div>
+
+              {/* Priority */}
+              <div className="relative" ref={priorityDropdownRef}>
+                <label className="block text-gray-700 text-sm font-medium mb-1">Priority</label>
+                <button
+                  type="button"
+                  onClick={() => setIsPriorityOpen(o => !o)}
+                  className="shadow border rounded w-full py-2 px-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                >
+                  <span>{watch('priority')}</span>
+                  <ChevronDown className="h-5 w-5" />
+                </button>
+                {isPriorityOpen && (
+                  <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
+                    <div className="mx-4 border-b border-gray-300 px-4 py-2 font-medium">Priority</div>
+                    <ul className="py-1">
+                      {(['Low','Normal','High'] as const).map((lvl,) => (
+                        <li
+                          key={lvl}
+                          className="mx-4 border-b border-gray-300 flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setValue('priority', lvl)
+                            setIsPriorityOpen(false)
+                          }}
+                        >
+                          <Flag
+                            className="h-4 w-4 mr-2 fill-current"
+                            style={{
+                              color:
+                                lvl === 'Low' ? '#FBBF24'
+                              : lvl === 'Normal' ? '#10B981'
+                              : '#EF4444'
+                            }}
+                          />
+                          {lvl}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Status */}
+              <div className="relative" ref={statusDropdownRef}>
+                <label className="block text-gray-700 text-sm font-medium mb-1">Status</label>
+                <button
+                  type="button"
+                  onClick={() => setIsStatusOpen(o => !o)}
+                  className="shadow border rounded w-full py-2 px-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                >
+                  <span>{watch('status')}</span>
+                  <ChevronDown className="h-5 w-5" />
+                </button>
+                {isStatusOpen && (
+                  <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
+                    <div className="mx-4 border-b border-gray-300 px-4 py-2 font-medium">Status</div>
+                    <ul className="py-1">
+                      {(['Pending','Active','Closed'] as const).map((st) => (
+                        <li
+                          key={st}
+                          className="mx-4 border-b border-gray-300 flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setValue('status', st)
+                            setIsStatusOpen(false)
+                          }}
+                        >
+                          <span
+                            className="w-4 h-4 rounded-full mr-2 block"
+                            style={{
+                              backgroundColor:
+                                st === 'Pending' ? '#FBBF24'
+                              : st === 'Active'  ? '#10B981'
+                              : '#EF4444'
+                            }}
+                          />
+                          {st}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Assignee */}
+              <div className="relative">
+                <label className="block text-gray-700 text-sm font-medium mb-1">Assignee</label>
+                <select
+                  {...register('assignee')}
+                  required
+                  className="appearance-none shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                >
+                  <option value="" disabled>Select</option>
+                  <option>Syed Muqarab</option>
+                  <option>Saud Haris</option>
+                  <option>Saeed</option>
+                </select>
+                <ChevronDown className="absolute top-9 right-3 h-5 w-5 pointer-events-none" />
+              </div>
+
+              {/* Assigned by */}
+              <div className="relative">
+                <label className="block text-gray-700 text-sm font-medium mb-1">Assigned by</label>
+                <select
+                  {...register('assigned')}
+                  required
+                  className="appearance-none shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                >
+                  <option value="" disabled>Select</option>
+                  <option>Majid</option>
+                  <option>Kaif</option>
+                  <option>Ahmer</option>
+                </select>
+                <ChevronDown className="absolute top-9 right-3 h-5 w-5 pointer-events-none" />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-1">Description</label>
+                <input
+                  type="text"
+                  placeholder="Enter description"
+                  {...register('description')}
+                  className="shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+              </div>
+            </div>
+
+            {/* Submit button */}
+            <div className="flex justify-end mt-6">
+              <button
+                type="submit"
+                className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              >
+                Create Task
+              </button>
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit(submit)} className="bg-white shadow-md rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            {/* Title */}
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">Title</label>
-              <input
-                type="text"
-                placeholder="Enter title"
-                required
-                {...register('name')}
-                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              />
-            </div>
-
-            {/* Due Date */}
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">Due Date</label>
-              <input
-                type="date"
-                {...register('due')}
-                required
-                className="shadow border rounded w-full py-2 px-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              />
-            </div>
-
-            {/* Priority */}
-            <div className="relative" ref={priorityDropdownRef}>
-              <label className="block text-gray-700 text-sm font-medium mb-1">Priority</label>
-              <button
-                type="button"
-                onClick={togglePriorityDropdown}
-                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 flex items-center justify-between"
-              >
-                <span>{watch('priority') || 'Select'}</span>
-                <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-black" />
-              </div>
-              </button>
-              {isPriorityOpen && (
-                <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
-                  <div className="border-b border-gray-300 px-4 mx-4 font-medium text-gray-700">Priority</div>
-                  <ul className="py-1">
-                    {(['Low', 'Normal', 'High'] as const).map((lvl, i) => (
-                      <li key={lvl} className="border-b border-gray-300 mx-4 flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
-                        setValue('priority', lvl)
-                        togglePriorityDropdown()
-                      }}>
-                        <Flag
-                          className="h-4 w-4 mr-2 fill-current"
-                          style={{ color: lvl === 'Low' ? '#FBBF24' : lvl === 'Normal' ? '#10B981' : '#EF4444' }}
-                        />
-                        {lvl}
-                        {i < 2 && <hr className="border-gray-200 mx-4 mt-2" />}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Status */}
-            <div className="relative" ref={statusDropdownRef}>
-              <label className="block text-gray-700 text-sm font-medium mb-1">Status</label>
-              <button
-                type="button"
-                onClick={toggleStatusDropdown}
-                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 flex items-center justify-between"
-              >
-                <span>{watch('status') || 'Select'}</span>
-                <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-black" />
-              </div>
-              </button>
-              {isStatusOpen && (
-                <div className="absolute z-10 mt-1 bg-white rounded-lg shadow-md w-full">
-                  <div className="border-b border-gray-300 px-4 mx-4 font-medium text-gray-700">Status</div>
-                  <ul className="py-1">
-                    {(['Pending', 'Active', 'Closed'] as const).map((st, i) => (
-                      <li key={st} className="border-b border-gray-300 mx-4 flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {
-                        setValue('status', st)
-                        toggleStatusDropdown()
-                      }}>
-                        <span
-                          className="w-4 h-4 rounded-full mr-2"
-                          style={{ backgroundColor: st === 'Pending' ? '#FBBF24' : st === 'Active' ? '#10B981' : '#EF4444' }}
-                        />
-                        {st}
-                        {i < 2 && <hr className="border-gray-200 mx-4 mt-2" />}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Assignee */}
-            <div className="relative">
-              <label className="block text-gray-700 text-sm font-medium mb-1">Assignee</label>
-              <select
-                {...register('assignee')}
-                defaultValue=""
-                className="text-sm appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              >
-                <option value="" disabled>Select</option>
-                <option>Syed Muqarab</option>
-                <option>Saud Haris</option>
-                <option>Saeed</option>
-              </select>
-              <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-black" />
-              </div>
-            </div>
-
-            {/* Assigned by */}
-            <div className="relative">
-              <label className="block text-gray-700 text-sm font-medium mb-1">Assigned by</label>
-              <select
-                {...register('assigned')}
-                defaultValue=""
-                className="text-sm appearance-none shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              >
-                <option value="" disabled>Select</option>
-                <option>Majid</option>
-                <option>Kaif</option>
-                <option>Ahmer</option>
-              </select>
-              <div className="absolute top-6 bottom-0 right-0 flex items-center px-3 pointer-events-none">
-                <ChevronDown className="h-5 w-5 text-black" />
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">Description</label>
-              <input
-                type="text"
-                placeholder="Enter description"
-                {...register('description')}
-                className="text-sm font-medium shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              />
-            </div>
-          </div>
-
-          {/* Submit */}
-          <div className="flex justify-end mt-6">
-            <button
-              type="submit"
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-            >
-              Create Task
-            </button>
-          </div>
-        </form>
       </main>
     </div>
   )
