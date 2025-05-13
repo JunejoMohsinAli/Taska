@@ -3,9 +3,10 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import Home, { Task } from './components/Home'
 import CreateTaskForm from './components/CreateTaskForm' 
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import PrivateRoute from './routes/PrivateRoute'
 import { useState } from 'react'
+import NotFound from './components/404';
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -47,7 +48,7 @@ function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   )
