@@ -6,9 +6,11 @@ import taskaLogo from '../assets/taska.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema, LoginData } from '../utils/auth';
 import { supabase } from '../utils/supabaseClient';
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -20,6 +22,7 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginData) => {
+    setLoading(true);
     const { email, password } = data;
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -27,12 +30,16 @@ export default function Login() {
       password,
     });
   
+    setLoading(false);
+
     if (error) {
-      alert(`Login failed: ${error.message}`);
-    } else {
-      console.log('Logged in as:', email);
-      navigate('/');
+      // Always show generic "incorrect credentials" message
+      return toast.error('Email and Password is incorrect');
     }
+
+    // Success
+    toast.success('Login successful!');
+    navigate('/');
   };
 
   return (
@@ -90,9 +97,14 @@ export default function Login() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600 transition"
+            disabled={loading}
+            className={`w-full text-white py-2 rounded-md transition ${
+              loading
+                ? 'bg-indigo-300 cursor-not-allowed'
+                : 'bg-indigo-500 hover:bg-indigo-600'
+            }`}
           >
-            LOG IN
+            {loading ? 'Logging in…' : 'LOG IN'}
           </button>
         </form>
 

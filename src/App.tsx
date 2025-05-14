@@ -7,6 +7,9 @@ import { Routes, Route } from 'react-router-dom'
 import PrivateRoute from './routes/PrivateRoute'
 import { useState } from 'react'
 import NotFound from './components/404';
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import Confirm from './components/Confirm'
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -22,6 +25,18 @@ function App() {
 
   return (
     <>
+
+<ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Routes>
         <Route path="/login"  element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -49,6 +64,7 @@ function App() {
         />
 
         <Route path="*" element={<NotFound />} />
+        <Route path="/confirm" element={<Confirm />} />
       </Routes>
     </>
   )
