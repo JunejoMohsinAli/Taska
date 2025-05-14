@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient'
 import { List, Trash2, Menu, X, ChevronDown, Flag } from 'lucide-react'
 import taskaLogo from '../assets/taska.svg'
 import TaskDetailsModal from './TaskDetailsModal'
+import { toast } from 'react-toastify';
 
 export type Task = {
   id: number
@@ -40,6 +41,7 @@ export default function Home({
   const [openStatusId, setOpenStatusId] = useState<number | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
+  const location = useLocation();
 
   // Auth guard
   useEffect(() => {
@@ -47,6 +49,18 @@ export default function Home({
       if (error || !user) navigate('/login')
     })
   }, [navigate])
+
+  // Show login-success toast if coming from login
+useEffect(() => {
+  if (location.state?.fromLogin) {
+    toast.success('Login successful!');
+
+    navigate('/', { state: { fromLogin: true } });
+    // clear the flag so it doesn’t fire again on refresh
+    window.history.replaceState({}, '');
+  }
+}, [location.state]);
+
 
   // Close dropdowns on outside click
   useEffect(() => {

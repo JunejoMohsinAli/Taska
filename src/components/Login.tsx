@@ -25,11 +25,7 @@ export default function Login() {
     setLoading(true);
     const { email, password } = data;
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-  
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
 
     if (error) {
@@ -37,21 +33,24 @@ export default function Login() {
       return toast.error('Email and Password is incorrect');
     }
 
-    // Success
+    // Success: show toast and pass flag into Home
     toast.success('Login successful!');
-    navigate('/');
+    navigate('/', { state: { fromLogin: true } });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 bg-[url('/background.png')] font-[poppins] flex items-center justify-center bg-no-repeat bg-[length:150%] bg-[position:bottom] sm:bg-[length:100%] sm:bg-[position:center_bottom]" >      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-sm mx-4">
+    <div className="min-h-screen bg-gray-100 bg-[url('/background.png')] font-[poppins] flex items-center justify-center bg-no-repeat bg-[length:150%] bg-[position:bottom] sm:bg-[length:100%] sm:bg-[position:center_bottom]">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-sm mx-4">
         {/* Logo */}
         <div className="flex items-center justify-center mb-4">
           <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
-          <h1 className="text-2xl font-semibold ml-2">Taska</h1>
+          <h1 className="text-2xl font-bold leading-8 tracking-[0.18px] ml-2 text-[rgba(76,78,100,0.87)]">
+            Taska
+          </h1>
         </div>
 
-        <h2 className="text-lg font-medium text-gray-700 mb-1">
-          Welcome back! <span className="text-xl">👋🏻</span>
+        <h2 className="text-2xl font-semibold leading-8 tracking-[0.18px] mb-4 text-[rgba(76,78,100,0.87)]">
+          Welcome back! <span className="text-2xl">👋🏻</span>
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -63,9 +62,7 @@ export default function Login() {
             className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
           {errors.email && (
-            <p className="text-red-500 text-sm mb-2">
-              {errors.email.message}
-            </p>
+            <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
           )}
 
           {/* Password */}
@@ -89,9 +86,7 @@ export default function Login() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-sm mb-4">
-              {errors.password.message}
-            </p>
+            <p className="text-red-500 text-sm mb-4">{errors.password.message}</p>
           )}
 
           {/* Submit */}
@@ -99,9 +94,7 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className={`w-full text-white py-2 rounded-md transition ${
-              loading
-                ? 'bg-indigo-300 cursor-not-allowed'
-                : 'bg-indigo-500 hover:bg-indigo-600'
+              loading ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'
             }`}
           >
             {loading ? 'Logging in…' : 'LOG IN'}
@@ -109,11 +102,12 @@ export default function Login() {
         </form>
 
         {/* Switch to Signup */}
-        <p className="mt-4 text-sm text-gray-800">
+        <p className="mt-4 text-sm text-[rgba(76,78,100,0.87)]">
           Don’t have an account?{' '}
           <Link
             to="/signup"
-            className="text-indigo-500 visited:text-indigo-800 font-medium hover:underline"
+            className="font-medium hover:underline"
+            style={{ letterSpacing: '0.18px', lineHeight: '32px', fontSize: '16px' }}
           >
             Sign Up
           </Link>
