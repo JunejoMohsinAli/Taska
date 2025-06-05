@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient'
-import { List, Trash2, Menu, X, ChevronDown, Flag } from 'lucide-react'
+import { Trash2, Menu, X, ChevronDown, Flag } from 'lucide-react'
 import taskaLogo from '../assets/taska.svg'
+import taskaBook from '../assets/book.png'
 import TaskDetailsModal from './TaskDetailsModal'
 import { toast } from 'react-toastify';
 
@@ -17,10 +18,24 @@ export type Task = {
   description?: string
 }
 
+// Home.tsx (or wherever this table lives)
+
+function formatToDDMonYYYY(isoDate: string): string {
+  // e.g. isoDate = "2024-01-20" or "2024-01-20T00:00:00.000Z"
+  const d = new Date(isoDate);
+  // We want: "dd Mon yyyy", e.g. "20 Jan 2024"
+  // toLocaleDateString with en-GB and short‐month does that:
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 const statusClasses: Record<Task['status'], string> = {
-  Pending: 'bg-amber-400 text-white',
-  Active:  'bg-lime-400 text-white',
-  Closed:  'bg-red-500 text-white',
+  Pending: 'bg-[#FFB72A] text-white',
+  Active:  'bg-[#74D453] text-white',
+  Closed:  'bg-[#F25353] text-white',
 }
 
 interface HomeProps {
@@ -103,11 +118,10 @@ useEffect(() => {
           <button
             className={`
               flex items-center w-full p-2 rounded-lg mb-2 transition-colors
-              ${isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'}
-            `}
-          >
-            <List className="h-5 w-5" />
-            {!isCollapsed && <span className="ml-2">Tasks</span>}
+              ${isCollapsed ? 'justify-center' : 'bg-indigo-50'}
+            `}>
+            <img src={taskaBook} alt="Taska" className="h-5 w-5" />
+            {!isCollapsed && <span className="ml-2">Task</span>}
           </button>
         </nav>
         <button
@@ -130,10 +144,10 @@ useEffect(() => {
             </div>
             <nav>
               <button
-                className="flex items-center w-full p-2 rounded-lg mb-2 bg-indigo-50 text-indigo-600"
+                className="flex items-center w-full p-2 rounded-lg mb-2 bg-indigo-50"
               >
-                <List className="h-5 w-5" />
-                <span className="ml-2">Tasks</span>
+                <img src={taskaBook} alt="Taska" className="h-5 w-5" />
+                <span className="ml-2">Task</span>
               </button>
             </nav>
           </div>
@@ -150,26 +164,21 @@ useEffect(() => {
         className="flex-1 flex flex-col overflow-auto"
       >
         {/* Top bar */}
-        <header className="flex items-center justify-between p-4 md:p-8 bg-white border-b">
+        <header className="flex items-center justify-between p-4 md:p-8 bg-white">
           <div className="flex items-center">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden mr-4 focus:outline-none"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <h1 className="text-2xl font-semibold">Tasks</h1>
+              <Menu className="h-6 w-6 mt-1 relative"/>
+            <h1 className="text-2xl ml-1 font-semibold">Tasks</h1>
           </div>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition"
           >
             Log Out
           </button>
         </header>
 
         {/* Action bar */}
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 flex justify-end">
           <button
             onClick={handleCreateNew}
             className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition"
@@ -182,12 +191,12 @@ useEffect(() => {
         <div className="flex-1 p-4 md:p-8 overflow-x-auto">
           <div className="bg-white rounded-lg shadow overflow-visible">
             <table className="min-w-full">
-              <thead className="bg-gray-100">
+              <thead className="justify-between items-center p-4 border-b border-gray-200 mx-6">
                 <tr>
                   {['Name','Due Date','Assignee','Priority','Status','Actions'].map(h => (
                     <th
                       key={h}
-                      className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase"
+                      className="px-6 py-3 text-left text-sm font-medium text-gray-600"
                     >
                       {h}
                     </th>
@@ -198,12 +207,26 @@ useEffect(() => {
                 {tasks.map(task => (
                   <tr
                     key={task.id}
-                    className="border-b last:border-none hover:bg-gray-50 cursor-pointer"
+                    className="justify-between items-center p-4 border-b border-gray-200 mx-6 hover:bg-gray-50 cursor-pointer"
                     onClick={() => setSelectedTask(task)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">{task.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{task.due}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{task.assignee}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+  <div className="flex justify-between items-center">
+    {/* Left: Task name */}
+    <span className="text-indigo-600 font-semibold">
+      {task.name}
+    </span>
+</div>
+</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+  <div className="flex justify-between items-center">
+    {/* Right: Formatted due date */}
+    <span className="text-sm font-semibold whitespace-nowrap">
+      {formatToDDMonYYYY(task.due)}
+    </span>
+  </div>
+</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">{task.assignee}</td>
 
                     {/* Priority */}
                     <td
@@ -221,9 +244,9 @@ useEffect(() => {
                           className="h-4 w-4 mr-2 fill-current"
                           style={{
                             color:
-                              task.priority === 'Low'    ? '#FBBF24'
-                            : task.priority === 'Normal' ? '#10B981'
-                                                          : '#EF4444'
+                              task.priority === 'Low'    ? '#FFB72A'
+                            : task.priority === 'Normal' ? '#75D653'
+                                                          : '#F25353'
                           }}
                         />
                         <span className="mr-1">{task.priority}</span>
@@ -246,9 +269,9 @@ useEffect(() => {
                                   className="h-4 w-4 mr-2 fill-current"
                                   style={{
                                     color:
-                                      lvl === 'Low'    ? '#FBBF24'
-                                    : lvl === 'Normal' ? '#10B981'
-                                                        : '#EF4444'
+                                      lvl === 'Low'    ? '#FFB72A'
+                                    : lvl === 'Normal' ? '#75D653'
+                                                        : '#F25353'
                                   }}
                                 />
                                 {lvl}
@@ -290,9 +313,9 @@ useEffect(() => {
                                   className="w-3 h-3 rounded-full mr-2 block"
                                   style={{
                                     backgroundColor:
-                                      st === 'Pending' ? '#FBBF24'
-                                    : st === 'Active'  ? '#10B981'
-                                                        : '#EF4444'
+                                      st === 'Pending' ? '#FFB72A'
+                                    : st === 'Active'  ? '#74D453'
+                                                        : '#F25353'
                                   }}
                                 />
                                 {st}

@@ -62,84 +62,85 @@ export default function Signup() {
           <img src={taskaLogo} alt="Taska Logo" className="h-8 w-8" />
           <h1 className="text-2xl font-semibold ml-2">Taska</h1>
         </div>
-        <h2 className="text-lg font-medium text-gray-700 mb-1">
-          Welcome to Taska! <span className="text-xl">👋🏻</span>
+        <h2 className="text-xl font-semibold leading-8 tracking-[0.18px] mb-4 text-[rgba(76,78,100,0.87)]">
+          Welcome to Taska! <span className="text-2xl">👋🏻</span>
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            {...register('fullName')}
-            className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
-          {errors.fullName && (
-            <p className="text-red-500 text-sm mb-2">{errors.fullName.message}</p>
-          )}
+    <input
+      type="text"
+      placeholder="Enter your name"
+      {...register('fullName')}
+      className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    />
+    <p className="text-red-500 text-sm h-5">
+      {errors.fullName?.message || ' '}
+    </p>
+<div className="relative">
+    <select
+      {...register('role')}
+      defaultValue=""
+      className="text-black appearance-none w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    >
+      <option value="" disabled>Select your role</option>
+      <option value="web">Web Developer</option>
+      <option value="ios">iOS Developer</option>
+      <option value="android">Android Developer</option>
+      <option value="SQA">SQA</option>
+    </select>
+      <div className="absolute top-0 bottom-6 right-0 flex items-center px-3">
+      <ChevronDown className="h-5 w-5 text-gray-500" />
+    </div>
+    <p className="text-red-500 text-sm h-5">
+      {errors.role?.message || ' '}
+    </p>
+    </div>
 
-          <div className='relative'>
-            <select
-              {...register('role')}
-              defaultValue=""
-              className="text-black appearance-none w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            >
-              <option value="" disabled>Select your role</option>
-              <option value="web">Web Developer</option>
-              <option value="ios">iOS Developer</option>
-              <option value="android">Android Developer</option>
-              <option value="SQA">SQA</option>
-            </select>
-            <div className="absolute top-0 bottom-3 right-0 flex items-center px-3 pointer-events-none">
-              <ChevronDown className="h-5 w-5 text-gray-500" />
-            </div>
-          </div>
-          {errors.role && (
-            <p className="text-red-500 text-sm mb-2">{errors.role.message}</p>
-          )}
+    <input
+      type="email"
+      placeholder="Enter your email"
+      {...register('email')}
+      className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    />
+    <p className="text-red-500 text-sm h-5">
+      {errors.email?.message || ' '}
+    </p>
 
-          <input
-            type="email"
-            placeholder="Enter your email"
-            {...register('email')}
-            className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
-          )}
+    <div className="relative">
+  <input
+    type={showPassword ? 'text' : 'password'}
+    placeholder="Enter your password"
+    {...register('password')}
+    className="placeholder-black w-full pr-10 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+  />
+  <button
+    type="button"
+    onClick={() => setShowPassword(prev => !prev)}
+    className="absolute top-0 bottom-6 right-0 flex items-center px-3"
+  >
+    {showPassword ? (
+      <EyeOff className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+    ) : (
+      <Eye className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+    )}
+  </button>
+  <p className="text-red-500 text-sm h-5">
+    {errors.password?.message || ' '}
+  </p>
+</div>
 
-          <div className="relative mb-4">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              {...register('password')}
-              className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(prev => !prev)}
-              className="absolute inset-y-0 right-0 px-3 flex items-center"
-            >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-500 hover:text-gray-700" />
-              ) : (
-                <Eye className="h-5 w-5 text-gray-500 hover:text-gray-700" />
-              )}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm mb-4">{errors.password.message}</p>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full text-white py-2 rounded-md transition ${
-              loading ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'
-            }`}
-          >
-            {loading ? 'Signing Up...' : 'SIGN UP'}
-          </button>
-        </form>
+  <button
+    type="submit"
+    disabled={loading}
+    className={`w-full text-white py-2 rounded-md transition ${
+      loading ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'
+    }`}
+  >
+    {loading ? 'Signing Up...' : 'SIGN UP'}
+  </button>
+</form>
+
 
         <p className="mt-4 text-sm text-gray-800">
           Already have an account?{' '}

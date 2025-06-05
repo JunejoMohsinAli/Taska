@@ -29,13 +29,14 @@ export default function Login() {
     setLoading(false);
 
     if (error) {
-      // Always show generic "incorrect credentials" message
-      return toast.error('Email and Password is incorrect');
+      // Show generic "incorrect credentials" on failure
+      return toast.error('Email or Password is incorrect');
     }
 
-    // Success: show toast and pass flag into Home
-    toast.success('Login successful!');
-    navigate('/', { state: { fromLogin: true } });
+    toast.success('Login successful!', { toastId: 'loginSuccessToast' });
+
+    // Navigate to home
+    navigate('/');
   };
 
   return (
@@ -49,8 +50,8 @@ export default function Login() {
           </h1>
         </div>
 
-        <h2 className="text-2xl font-semibold leading-8 tracking-[0.18px] mb-4 text-[rgba(76,78,100,0.87)]">
-          Welcome back! <span className="text-2xl">👋🏻</span>
+        <h2 className="text-xl font-semibold leading-8 tracking-[0.18px] mb-4 text-[rgba(76,78,100,0.87)]">
+          Welcome to Taska! <span className="text-2xl">👋🏻</span>
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -59,24 +60,24 @@ export default function Login() {
             type="email"
             placeholder="Enter your email"
             {...register('email')}
-            className="placeholder-black w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
-          )}
+          <p className="text-red-500 text-sm h-5">
+            {errors.email?.message || ' '}
+          </p>
 
           {/* Password */}
-          <div className="relative mb-4">
+          <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Enter your password"
               {...register('password')}
-              className="placeholder-black w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="placeholder-black w-full pr-10 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
             <button
               type="button"
               onClick={() => setShowPassword((p) => !p)}
-              className="absolute inset-y-0 right-0 px-3 flex items-center"
+              className="absolute inset-y-0 right-0 flex items-center px-3"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5 text-gray-500 hover:text-gray-700" />
@@ -85,9 +86,9 @@ export default function Login() {
               )}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm mb-4">{errors.password.message}</p>
-          )}
+          <p className="text-red-500 text-sm h-5">
+            {errors.password?.message || ' '}
+          </p>
 
           {/* Submit */}
           <button
@@ -102,12 +103,11 @@ export default function Login() {
         </form>
 
         {/* Switch to Signup */}
-        <p className="mt-4 text-sm text-[rgba(76,78,100,0.87)]">
+        <p className="mt-4 text-sm text-gray-800">
           Don’t have an account?{' '}
           <Link
             to="/signup"
-            className="font-medium hover:underline"
-            style={{ letterSpacing: '0.18px', lineHeight: '32px', fontSize: '16px' }}
+            className="text-indigo-500 visited:text-indigo-800 font-medium hover:underline"
           >
             Sign Up
           </Link>

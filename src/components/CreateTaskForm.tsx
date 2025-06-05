@@ -1,7 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { BookOpen, Menu, X, ChevronDown, Flag } from 'lucide-react'
+import { Menu, X, ChevronDown, Flag } from 'lucide-react'
 import taskaLogo from '../assets/taska.svg'
+import taskaBook from '../assets/book.png'
+
 import { supabase } from '../utils/supabaseClient'
 import { useState, useRef, useEffect } from 'react'
 
@@ -102,11 +104,11 @@ export default function CreateTaskForm({ onSubmit }: Props) {
           <button
             className={`
               flex items-center w-full p-2 rounded-lg mb-2 transition-colors
-              ${isCollapsed ? 'justify-center' : 'bg-indigo-50 text-indigo-600'}
+              ${isCollapsed ? 'justify-center' : 'bg-indigo-50'}
             `}
           >
-            <BookOpen className="h-5 w-5" />
-            {!isCollapsed && <span className="ml-2">Tasks</span>}
+            <img src={taskaBook} alt="Taska" className="h-5 w-5" />
+            {!isCollapsed && <span className="ml-2">Task</span>}
           </button>
         </nav>
         <button
@@ -129,10 +131,10 @@ export default function CreateTaskForm({ onSubmit }: Props) {
             </div>
             <nav>
               <button
-                className="flex items-center w-full p-2 rounded-lg mb-2 bg-indigo-50 text-indigo-600"
+                className="flex items-center w-full p-2 rounded-lg mb-2 bg-indigo-50"
               >
-                <BookOpen className="h-5 w-5" />
-                <span className="ml-2">Tasks</span>
+                <img src={taskaBook} alt="Taska" className="h-5 w-5" />
+                <span className="ml-2">Task</span>
               </button>
             </nav>
           </div>
@@ -146,15 +148,10 @@ export default function CreateTaskForm({ onSubmit }: Props) {
       {/* Main */}
       <main className="flex-1 flex flex-col overflow-auto">
         {/* Header */}
-        <header className="flex items-center justify-between p-4 md:p-8 bg-white border-b">
+        <header className="flex items-center justify-between p-4 md:p-8 bg-white">
           <div className="flex items-center">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden mr-4 focus:outline-none"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <h1 className="text-2xl font-semibold">Create New Task</h1>
+              <Menu className="h-6 w-6 mt-1 relative"/>
+            <h1 className="text-2xl ml-1 font-semibold">Create New Task</h1>
           </div>
           <button
             onClick={handleLogout}
@@ -176,7 +173,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                   placeholder="Enter title"
                   required
                   {...register('name')}
-                  className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 shadow rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               </div>
 
@@ -187,7 +184,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                   type="date"
                   required
                   {...register('due')}
-                  className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 shadow rounded-lg w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               </div>
 
@@ -197,7 +194,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsPriorityOpen(o => !o)}
-                  className="shadow border rounded w-full py-2 px-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 shadow rounded-lg w-full py-2 px-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <span>{watch('priority')}</span>
                   <ChevronDown className="h-5 w-5" />
@@ -209,7 +206,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                       {(['Low','Normal','High'] as const).map((lvl,) => (
                         <li
                           key={lvl}
-                          className="mx-4 border-b border-gray-300 flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          className=" border-b border-gray-300 flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                           onClick={() => {
                             setValue('priority', lvl)
                             setIsPriorityOpen(false)
@@ -238,7 +235,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsStatusOpen(o => !o)}
-                  className="shadow border rounded w-full py-2 px-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 shadow rounded-lg w-full py-2 px-3 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <span>{watch('status')}</span>
                   <ChevronDown className="h-5 w-5" />
@@ -279,7 +276,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                 <select
                   {...register('assignee')}
                   required
-                  className="appearance-none shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 appearance-none shadow rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <option value="" disabled>Select</option>
                   <option>Syed Muqarab</option>
@@ -295,7 +292,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                 <select
                   {...register('assigned')}
                   required
-                  className="appearance-none shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 appearance-none shadow rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <option value="" disabled>Select</option>
                   <option>Majid</option>
@@ -312,7 +309,7 @@ export default function CreateTaskForm({ onSubmit }: Props) {
                   type="text"
                   placeholder="Enter description"
                   {...register('description')}
-                  className="shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="border border-gray-400 shadow rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               </div>
             </div>

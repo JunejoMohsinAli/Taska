@@ -17,7 +17,7 @@ export default function TaskDetailsModal({ task, onClose, onDelete }: Props) {
     <div className="fixed inset-0 bg-black/25 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-5xl relative">
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-200 mx-6 "> 
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 mx-6"> 
           <h2 className="text-xl font-semibold">Task Details</h2>
           <button onClick={onClose} aria-label="Close modal">
             <X className="h-5 w-5 text-gray-600 hover:text-gray-800" />
